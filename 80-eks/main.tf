@@ -3,7 +3,7 @@ module "eks" {
   version = "~> 21.0"  # this is module version
 
   name               = "${var.project}-${var.environment}"
-  kubernetes_version = "1.33"
+  kubernetes_version = "1.34"
 
   addons = {
     coredns                = {}
@@ -36,7 +36,26 @@ module "eks" {
 
   # EKS Managed Node Group(s)
   eks_managed_node_groups = {
-    blue = {
+    # blue = {
+    #   # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
+    #   ami_type       = "AL2023_x86_64_STANDARD"
+    #   instance_types = ["m5.xlarge"]
+
+    #   # we need to provide key_pair also if we want to login to the nodes
+
+    #   min_size     = 2
+    #   max_size     = 10
+    #   desired_size = 2
+
+    #   iam_role_additional_policies = {
+    #     AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+    #     AmazonEFSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
+    #     AmazonEKSLoadBalancingPolicy = "arn:aws:iam::aws:policy/AmazonEKSLoadBalancingPolicy"
+         
+    #   }
+    # }
+
+    green = {
       # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
       ami_type       = "AL2023_x86_64_STANDARD"
       instance_types = ["m5.xlarge"]
@@ -53,6 +72,14 @@ module "eks" {
         AmazonEKSLoadBalancingPolicy = "arn:aws:iam::aws:policy/AmazonEKSLoadBalancingPolicy"
          
       }
+
+    #   taints = {
+    #     upgrade = {
+    #         key = "upgrade"
+    #         value = "true"
+    #         effect = "NO_SCHEDULE"
+    #     }
+    #   }
     }
   }
 
