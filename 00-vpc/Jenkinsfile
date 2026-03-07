@@ -60,6 +60,17 @@ pipeline{
                 }
             }
         }
+
+        // Downstream job
+        stage('Trigger SG'){
+            steps{
+                script{
+                    build job: '10-sg', 
+                    propagate: false,   // even if SG fails, VPC will not fail
+                    wait: false         // VPC doesnot wait for the SG pipeline to complete
+                }
+            }
+        }
     }
 
    // Post-Build
