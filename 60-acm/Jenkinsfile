@@ -1,0 +1,73 @@
+pipeline{
+    // agent any
+    agent {
+        node {
+            label 'AGENT-1'
+        }
+    }
+    // Pre-Build
+    environment{
+        REGION = "us-east-1"
+        ACC_ID = "235270182665"
+        PROJECT = "roboshop"
+    }
+    options {
+        timeout(time: 59, unit: 'MINUTES')
+        disableConcurrentBuilds()
+        ansiColor('xterm')
+    }
+   
+   // Build
+    stages{
+        stage('init'){
+            steps{
+                script{
+                    withAWS(credentials: 'aws-creds', region: 'us-east-1') {
+                        sh """
+                            cd 60-acm
+                            terraform init -reconfigure
+                        """
+                    }   
+                }
+            }
+        }
+        stage('plan'){
+            steps{
+                script{
+                    withAWS(credentials: 'aws-creds', region: 'us-east-1') {
+                        sh """
+                            cd 60-acm
+                            terraform plan
+                        """
+                    }   
+                }
+            }
+        }
+        stage('apply'){
+            steps{
+                script{
+                    withAWS(credentials: 'aws-creds', region: 'us-east-1') {
+                        sh """
+                            cd 60-acm
+                            terraform apply -auto-approve
+                        """
+                    }   
+                }
+            }
+        }
+    }
+
+   // Post-Build
+    post { 
+        always { 
+            echo 'I will always say Hello pipeline!'
+            deleteDir()
+        }
+        success { 
+            echo 'Hello pipeline is success!'
+        }
+        failure { 
+            echo 'Hello pipeline is failure!'
+        }
+    }
+}
