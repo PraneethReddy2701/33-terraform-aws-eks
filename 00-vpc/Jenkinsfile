@@ -24,7 +24,7 @@ pipeline{
                     withAWS(credentials: 'aws-creds', region: 'us-east-1') {
                         sh """
                             cd 00-vpc
-                            terraform init -recnfigure
+                            terraform init -reconfigure
                         """
                     }   
                 }
